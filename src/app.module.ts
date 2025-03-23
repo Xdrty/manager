@@ -20,7 +20,8 @@ export class AppModule implements NestModule {
         { path: "auth/login", method: RequestMethod.POST },
         // { path: "user/super", method: RequestMethod.POST },
         { path: "sample", method: RequestMethod.POST },
-        { path: "users", method: RequestMethod.POST }
+        { path: "users", method: RequestMethod.POST },
+        { path: "sample/clearDB", method: RequestMethod.DELETE }
       )
       .forRoutes("*")
   }

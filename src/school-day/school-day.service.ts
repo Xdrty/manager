@@ -33,14 +33,17 @@ export class SchoolDayService {
         });
 
         // Создаем уроки на основе шаблона
+        let currentSerialNumber = 1
         for (const templateLesson of templateDay.lessons) {
             await this.prisma.lesson.create({
                 data: {
                     name: templateLesson.name,
-                    homework: "nothing yet", // Значение по умолчанию
+                    homework: templateLesson.homework ? templateLesson.homework : "nothing", // Значение по умолчанию
                     schoolDayId: schoolDay.id,
+                    serialNumber: currentSerialNumber
                 },
             });
+            currentSerialNumber += 1
         }
 
         return schoolDay;
@@ -87,7 +90,7 @@ export class SchoolDayService {
         data: {
             date: string;
             sclassId: number;
-            lessons: { name: string }[];
+            lessons: { name: string, serialNumber: number }[];
         }) {
         const day = await this.prisma.schoolDay.findUnique({
             where: {
@@ -108,7 +111,7 @@ export class SchoolDayService {
                 date: new Date(data.date),
                 sclassId: data.sclassId,
                 lessons: {
-                    create: data.lessons.map(lesson => ({ name: lesson.name })),
+                    create: data.lessons.map(lesson => ({ name: lesson.name, serialNumber: lesson.serialNumber })),
                 },
             },
             include: {

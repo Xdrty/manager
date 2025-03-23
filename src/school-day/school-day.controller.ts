@@ -28,7 +28,7 @@ export class SchoolDayController {
     @Body() data: {
       date: string;
       sclassId: number;
-      lessons: { name: string }[];
+      lessons: { name: string, serialNumber: number }[];
     }) {
     return this.schoolDayService.createSchoolDayHand(data);
   }

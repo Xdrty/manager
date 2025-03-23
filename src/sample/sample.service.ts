@@ -50,17 +50,53 @@ export class SampleService {
     private async createTemplateDays(sclassId: number) {
         const daysOfWeek = [1, 2, 3, 4, 5, 6, 7]; // Понедельник - Воскресенье
         const lessonsByDay = {
-            1: ['Математика', 'Русский язык', 'Литература', 'Физика', 'Химия'], // 5 уроков
-            2: ['История', 'Биология', 'География', 'Английский язык', 'Обществознание'], // 5 уроков
-            3: ['Физкультура', 'Информатика', 'Технология', 'Музыка'], // 4 урока
-            4: ['Математика', 'Русский язык', 'Литература', 'История', 'Физика', 'Химия'], // 6 уроков
-            5: ['Биология', 'Химия', 'Физика', 'Английский язык', 'Немецкий язык', 'Математика'], // 6 уроков
-            6: ['Физкультура', 'Труд', 'Проектная деятельность', 'Искусство'], // 4 урока
-            7: [], // Воскресенье — 0 уроков
-        };
+            "1": [
+                { "name": "Математика", "serialNumber": 1, "homework": "повторять теорию" },
+                { "name": "Русский язык", "serialNumber": 2, "homework": "почитать учебник" },
+                { "name": "Литература", "serialNumber": 3 },
+                { "name": "Физика", "serialNumber": 4 },
+                { "name": "Химия", "serialNumber": 5 }
+            ],
+            "2": [
+                { "name": "История", "serialNumber": 1, "homework": "пересказать параграф" },
+                { "name": "Биология", "serialNumber": 2, "homework": "изучить материал" },
+                { "name": "География", "serialNumber": 3 },
+                { "name": "Английский язык", "serialNumber": 4 },
+                { "name": "Обществознание", "serialNumber": 5 }
+            ],
+            "3": [
+                { "name": "Физкультура", "serialNumber": 1, "homework": "выполнить упражнения" },
+                { "name": "Информатика", "serialNumber": 2, "homework": "повторить теорию" },
+                { "name": "Технология", "serialNumber": 3 },
+                { "name": "Музыка", "serialNumber": 4 }
+            ],
+            "4": [
+                { "name": "Математика", "serialNumber": 1, "homework": "решать задачи" },
+                { "name": "Русский язык", "serialNumber": 2, "homework": "повторить правила" },
+                { "name": "Литература", "serialNumber": 3 },
+                { "name": "История", "serialNumber": 4 },
+                { "name": "Физика", "serialNumber": 5 },
+                { "name": "Химия", "serialNumber": 6 }
+            ],
+            "5": [
+                { "name": "Биология", "serialNumber": 1, "homework": "почитать учебник" },
+                { "name": "Химия", "serialNumber": 2, "homework": "изучить формулы" },
+                { "name": "Физика", "serialNumber": 3 },
+                { "name": "Английский язык", "serialNumber": 4 },
+                { "name": "Немецкий язык", "serialNumber": 5 },
+                { "name": "Математика", "serialNumber": 6 }
+            ],
+            "6": [
+                { "name": "Физкультура", "serialNumber": 1, "homework": "выполнить разминку" },
+                { "name": "Труд", "serialNumber": 2, "homework": "подготовить материалы" },
+                { "name": "Проектная деятельность", "serialNumber": 3 },
+                { "name": "Искусство", "serialNumber": 4 }
+            ],
+            "7": []
+        }
 
         for (const dayOfWeek of daysOfWeek) {
-            const lessons = lessonsByDay[dayOfWeek].map((name) => ({ name }));
+            const lessons = lessonsByDay[dayOfWeek].map((obj) => ({ name: obj.name, serialNumber: obj.serialNumber, homework: obj.homework ? obj.homework : "nothing" }));
             await this.prisma.templateDay.create({
                 data: {
                     dayOfWeek,
@@ -83,5 +119,10 @@ export class SampleService {
             startDate,
             endDate,
         );
+    }
+
+    async clearDB() {
+        await this.prisma.sclass.deleteMany()
+        await this.prisma.user.deleteMany()
     }
 }

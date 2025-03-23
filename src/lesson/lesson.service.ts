@@ -5,12 +5,13 @@ import { PrismaService } from '../prisma.service';
 export class LessonService {
     constructor(private prisma: PrismaService) { }
 
-    async createLesson(name: string, homework: string, schoolDayId: number) {
+    async createLesson(name: string, homework: string, schoolDayId: number, serialNumber: number) {
         const lesson = await this.prisma.lesson.create({
             data: {
                 name,
                 homework,
                 schoolDayId,
+                serialNumber
             },
         });
         return lesson;

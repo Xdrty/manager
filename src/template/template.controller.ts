@@ -10,7 +10,7 @@ export class TemplateController {
     @Body() data: {
       dayOfWeek: number;
       sclassId: number;
-      lessons: { name: string }[];
+      lessons: { name: string, serialNumber: number, homework: string }[];
     }) {
     return this.templateService.createTemplateDay(data);
   }

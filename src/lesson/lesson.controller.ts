@@ -10,8 +10,9 @@ export class LessonController {
     @Body('name') name: string,
     @Body('homework') homework: string,
     @Body('schoolDayId') schoolDayId: number,
+    @Body('serialNumber') serialNumber: number,
   ) {
-    return this.lessonService.createLesson(name, homework, schoolDayId);
+    return this.lessonService.createLesson(name, homework, schoolDayId, serialNumber);
   }
 
   // @Get()

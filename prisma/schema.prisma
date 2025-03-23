@@ -42,11 +42,12 @@ model SchoolDay {
 }
 
 model Lesson {
-  id          Int       @id @default(autoincrement())
-  name        String
-  homework    String    @default("nothing")
-  schoolDayId Int
-  schoolDay   SchoolDay @relation(fields: [schoolDayId], references: [id], onDelete: Cascade)
+  id           Int       @id @default(autoincrement())
+  name         String
+  homework     String    @default("nothing")
+  serialNumber Int
+  schoolDayId  Int
+  schoolDay    SchoolDay @relation(fields: [schoolDayId], references: [id], onDelete: Cascade)
 }
 
 model TemplateDay {
@@ -62,6 +63,8 @@ model TemplateDay {
 model TemplateLesson {
   id            Int         @id @default(autoincrement())
   name          String
+  serialNumber  Int
+  homework      String?
   templateDayId Int
   templateDay   TemplateDay @relation(fields: [templateDayId], references: [id], onDelete: Cascade)
 }

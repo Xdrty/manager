@@ -9,14 +9,14 @@ export class TemplateService {
         data: {
             dayOfWeek: number;
             sclassId: number;
-            lessons: { name: string }[];
+            lessons: { name: string, serialNumber: number, homework: string }[];
         }) {
         return this.prisma.templateDay.create({
             data: {
                 dayOfWeek: data.dayOfWeek,
                 sclassId: data.sclassId,
                 lessons: {
-                    create: data.lessons.map(lesson => ({ name: lesson.name })),
+                    create: data.lessons.map(lesson => ({ name: lesson.name, serialNumber: lesson.serialNumber, homework: lesson.homework })),
                 },
             },
             include: {

@@ -21,7 +21,8 @@ export class AppModule implements NestModule {
         // { path: "user/super", method: RequestMethod.POST },
         { path: "sample", method: RequestMethod.POST },
         { path: "users", method: RequestMethod.POST },
-        { path: "sample/clearDB", method: RequestMethod.DELETE }
+        { path: "sample/clearDB", method: RequestMethod.DELETE },
+        { path: "users", method: RequestMethod.GET }
       )
       .forRoutes("*")
   }

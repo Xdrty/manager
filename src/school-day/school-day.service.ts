@@ -136,13 +136,13 @@ export class SchoolDayService {
         return schoolDays;
     }
 
-    // async getSchoolDayById(id: number) {
-    //     const schoolDay = await this.prisma.schoolDay.findUnique({
-    //         where: { id },
-    //         include: { sclass: true, lessons: true },
-    //     });
-    //     return schoolDay;
-    // }
+    async getSchoolDayById(id: number) {
+        const schoolDay = await this.prisma.schoolDay.findUnique({
+            where: { id },
+            include: { lessons: true }, //sclass: true,
+        });
+        return schoolDay;
+    }
 
     // async updateSchoolDay(id: number, date?: string, sclassId?: number) {
     //     const schoolDay = await this.prisma.schoolDay.update({

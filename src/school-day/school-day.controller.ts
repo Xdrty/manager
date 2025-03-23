@@ -51,10 +51,10 @@ export class SchoolDayController {
     );
   }
 
-  // @Get(':id')
-  // async getSchoolDayById(@Param('id') id: string) {
-  //   return this.schoolDayService.getSchoolDayById(parseInt(id));
-  // }
+  @Get(':id')
+  async getSchoolDayById(@Param('id') id: string) {
+    return this.schoolDayService.getSchoolDayById(parseInt(id));
+  }
 
   // @Patch(':id')
   // async updateSchoolDay(

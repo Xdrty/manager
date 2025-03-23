@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  sclassId Int
+  sclass   Sclass    @relation(fields: [sclassId], references: [id], onDelete: Cascade)
+  sessions Session[]
+}
+
+model Session {
+  id        String @id @default(uuid())
+  expiresAt Int
+  userId    Int
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Sclass {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  users        User[]
+  schoolDays   SchoolDay[]
+  templateDays TemplateDay[]
+}
+
+model SchoolDay {
+  id       Int      @id @default(autoincrement())
+  date     DateTime @db.Date
+  sclassId Int
+  sclass   Sclass   @relation(fields: [sclassId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+
+  @@unique([sclassId, date])
+}
+
+model Lesson {
+  id          Int       @id @default(autoincrement())
+  name        String
+  homework    String    @default("nothing")
+  schoolDayId Int
+  schoolDay   SchoolDay @relation(fields: [schoolDayId], references: [id], onDelete: Cascade)
+}
+
+model TemplateDay {
+  id        Int              @id @default(autoincrement())
+  dayOfWeek Int // 1-7, где 1 — понедельник, 7 — воскресенье
+  sclassId  Int
+  sclass    Sclass           @relation(fields: [sclassId], references: [id], onDelete: Cascade)
+  lessons   TemplateLesson[]
+
+  @@unique([dayOfWeek, sclassId])
+}
+
+model TemplateLesson {
+  id            Int         @id @default(autoincrement())
+  name          String
+  templateDayId Int
+  templateDay   TemplateDay @relation(fields: [templateDayId], references: [id], onDelete: Cascade)
+}

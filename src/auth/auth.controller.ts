@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, HttpCode, HttpStatus, Delete, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpCode, HttpStatus, Delete, Req, BadRequestException, UnauthorizedException, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 
@@ -6,7 +6,7 @@ import { Response, Request } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  // Вход пользователя
+  // User login
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -14,28 +14,40 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const login = await this.authService.login(username, password);
-
-    // Устанавливаем куку с зашифрованным sessionId
-    res.cookie('sessionId', login.sessionId, {
-      httpOnly: true, // Защита от XSS
-      secure: process.env.NODE_ENV === 'production', // Только HTTPS в продакшене
-      sameSite: 'strict', // Защита от CSRF
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-    });
-
-    return login.user;
+    try {
+      // First validate the user
+      const user = await this.authService.validateUser(username, password);
+      
+      // Then login with the validated user
+      return await this.authService.login(user, res);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid username or password');
+    }
   }
 
-  // Выход пользователя
+  // Get current user
+  @Get('me')
+  async getCurrentUser(@Req() req: Request) {
+    try {
+      // The user ID is set by the JWT middleware
+      const userId = req['userId'];
+      if (!userId) {
+        throw new UnauthorizedException('Authentication required');
+      }
+      
+      return await this.authService.getUserById(userId);
+    } catch (error) {
+      throw new UnauthorizedException('Authentication required');
+    }
+  }
+
+  // User logout
   @Delete('logout')
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const encryptedSessionId = req.cookies['sessionId'];
-    if (encryptedSessionId) {
-      await this.authService.logout(encryptedSessionId);
-    } else throw new BadRequestException("required params is missed")
-    // Удаляем куку
-    res.clearCookie('sessionId');
-    return { message: 'Выход выполнен успешно' };
+    try {
+      return await this.authService.logout(res);
+    } catch (error) {
+      throw new BadRequestException('Failed to logout');
+    }
   }
 }

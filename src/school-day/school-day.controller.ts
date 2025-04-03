@@ -13,7 +13,7 @@ export class SchoolDayController {
     return this.schoolDayService.createSchoolDay(sclassId, date);
   }
 
-  @Post('range')
+  @Post('range') //дни создаются автоматически, можно сделать чтоб создавался год в sample
   async createSchoolDaysInRange(
     @Body('sclassId') sclassId: number,
     @Body('startDate') startDate: string,

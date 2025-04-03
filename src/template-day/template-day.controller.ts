@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Delete, Param, ParseIntPipe, Get } from '@nestjs/common';
-import { TemplateService } from './template.service'; // Обновленный импорт сервиса
+import { TemplateService } from '../template/template.service';
 
-@Controller('template')
-export class TemplateController {
+@Controller('template-days')
+export class TemplateDayController {
   constructor(private readonly templateService: TemplateService) { }
 
   @Get('by-sclass/:sclassId')
@@ -29,4 +29,4 @@ export class TemplateController {
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.templateService.deleteTemplateDay(id);
   }
-}
+} 

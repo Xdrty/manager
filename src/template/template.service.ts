@@ -5,6 +5,29 @@ import { PrismaService } from '../prisma.service'; // Предполагаетс
 export class TemplateService {
     constructor(private prisma: PrismaService) { }
 
+    async getTemplateDaysByClassId(sclassId: number) {
+        return this.prisma.templateDay.findMany({
+            where: { sclassId },
+            include: {
+                lessons: {
+                    orderBy: { serialNumber: 'asc' }
+                }
+            },
+            orderBy: { dayOfWeek: 'asc' }
+        });
+    }
+
+    async getTemplateDayById(id: number) {
+        return this.prisma.templateDay.findUnique({
+            where: { id },
+            include: {
+                lessons: {
+                    orderBy: { serialNumber: 'asc' }
+                }
+            }
+        });
+    }
+
     async createTemplateDay(
         data: {
             dayOfWeek: number;

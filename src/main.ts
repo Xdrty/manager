@@ -14,7 +14,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'https://school-manager-pi.vercel.app/',
+    origin: 'https://school-manager-pi.vercel.app',
     credentials: true,
     allowedHeaders: ['Content-Type','Authorization','Accept','X-Requested-With'],
     methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],

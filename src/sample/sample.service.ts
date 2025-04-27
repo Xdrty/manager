@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { SchoolDayService } from '../school-day/school-day.service';
 
 @Injectable()
-export class SampleService {
+export class SampleService implements OnModuleInit {
     constructor(
         private prisma: PrismaService,
         private schoolDayService: SchoolDayService,
     ) { }
+
+    async onModuleInit(): Promise<void> {
+        await this.clearDB()
+        await this.createSampleData();
+    }
 
     async createSampleData() {
         // 1. Создание класса "9i"

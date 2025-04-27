@@ -2,19 +2,22 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { readFileSync } from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key:  readFileSync('/etc/letsencrypt/live/schoool-manager.duckdns.org/privkey.pem'),
+    cert: readFileSync('/etc/letsencrypt/live/schoool-manager.duckdns.org/fullchain.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   app.use(cookieParser());
-  
-  // Enable CORS with extended configuration
+
   app.enableCors({
-    origin: true, // Allow all origins in development
+    origin: 'https://school-manager-pi.vercel.app/',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    allowedHeaders: ['Content-Type','Authorization','Accept','X-Requested-With'],
+    methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
     exposedHeaders: ['Set-Cookie'],
   });
 
@@ -26,7 +29,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  console.log('Server starting on port 3001 with CORS enabled - all origins allowed in development mode');
-  await app.listen(3002); // Listen on all network interfaces , '0.0.0.0'
+  console.log('Server starting on port 443 with TLS');
+  await app.listen(443, '0.0.0.0');
 }
-bootstrap()
+
+bootstrap();

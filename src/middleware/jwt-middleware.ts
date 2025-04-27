@@ -12,6 +12,7 @@ export class JwtMiddleware implements NestMiddleware {
 
         this.logger.log(`${req.method} - ${req.path}, IP: ${req.ip}`);
         const token = req.cookies["sessionId"];
+        this.logger.warn(token, req.cookies)
 
         // Check if this is a public route that doesn't need authentication
         if (req.path === '/auth/login' || req.path === '/test') {

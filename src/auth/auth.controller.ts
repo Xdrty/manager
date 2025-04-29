@@ -20,11 +20,12 @@ export class AuthController {
       this.logger.log(`start user`)
       const user = await this.authService.validateUser(username, password);
       this.logger.log(`returned user`)
-      
+
       // Then login with the validated user
       this.logger.log(`start login`)
       return await this.authService.login(user, res);
     } catch (error) {
+      this.logger.log(`error in login ${error}`)
       throw new UnauthorizedException('Invalid username or password', error);
     }
   }
@@ -38,7 +39,7 @@ export class AuthController {
       if (!userId) {
         throw new UnauthorizedException('Authentication required');
       }
-      
+
       return await this.authService.getUserById(userId);
     } catch (error) {
       throw new UnauthorizedException('Authentication required');

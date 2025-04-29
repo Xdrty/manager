@@ -18,10 +18,10 @@ export class SessionService {
                 expiresAt: Math.round(Date.now() / 1000) + 60 * 60 * 24 * 30, // месяц
             },
         });
-        this.logger.log(`session created`)
+        this.logger.log(`session created, go to encrypt with sessionId = ${session.id}`)
         const encryptedSessionId = this.encryptSessionId(session.id);
         this.logger.log(`encryptedSessionId`)
-        return  encryptedSessionId
+        return encryptedSessionId
     }
 
     async deleteSession(decryptedSessionId: string) {
@@ -54,13 +54,17 @@ export class SessionService {
         return key;
     }
 
-    encryptSessionId(toEncrypt: string): string {
-        const iv = crypto.randomBytes(16);
-        const key = this.getEncryptionKey();
-        const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-        let encrypted = cipher.update(toEncrypt, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        return `${iv.toString('hex')}:${encrypted}`;
+    encryptSessionId(toEncrypt: string) {
+        try {
+            const iv = crypto.randomBytes(16);
+            const key = this.getEncryptionKey();
+            const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+            let encrypted = cipher.update(toEncrypt, 'utf8', 'hex');
+            encrypted += cipher.final('hex');
+            return `${iv.toString('hex')}:${encrypted}`;
+        } catch (e) {
+            this.logger.log(`error in encrypting ${e}`)
+        }
     }
 
     decryptSessionId(toDecrypt: string): string {

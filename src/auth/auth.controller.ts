@@ -25,7 +25,7 @@ export class AuthController {
       this.logger.log(`start login`)
       return await this.authService.login(user, res);
     } catch (error) {
-      throw new UnauthorizedException('Invalid username or password');
+      throw new UnauthorizedException('Invalid username or password', error);
     }
   }
 

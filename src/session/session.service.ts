@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class SessionService {
     constructor(private readonly prisma: PrismaService) { }
+    private readonly logger = new Logger();
 
     async createSession(userId: number) {
         await this.deleteAllSessions(userId);
+        this.logger.log(`all sessions deleted`)
         const uuid = crypto.randomUUID();
         const session = await this.prisma.session.create({
             data: {
@@ -16,7 +18,10 @@ export class SessionService {
                 expiresAt: Math.round(Date.now() / 1000) + 60 * 60 * 24 * 30, // месяц
             },
         });
-        return this.encryptSessionId(session.id);
+        this.logger.log(`session created`)
+        const encryptedSessionId = this.encryptSessionId(session.id);
+        this.logger.log(`encryptedSessionId`)
+        return  encryptedSessionId
     }
 
     async deleteSession(decryptedSessionId: string) {

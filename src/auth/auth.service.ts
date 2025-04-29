@@ -52,9 +52,12 @@ export class AuthService {
 
     async login(user: any, res: Response) {
         const payload = { sub: user.id, username: user.username };
+        this.logger.log(`payload ${payload}`)
         const userok = await this.userService.findUserByUsername(payload.username)
         if (!userok) throw new NotFoundException("incorrect input data")
+        this.logger.log(`userok`)
         const sessionId = await this.sessionService.createSession(userok.id)
+        this.logger.log(`session`)
 
         res.cookie('sessionId', sessionId, {
             httpOnly: false,
@@ -63,6 +66,7 @@ export class AuthService {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             path: '/',
         });
+        this.logger.log(`cookie`)
 
         return {
             id: user.id,

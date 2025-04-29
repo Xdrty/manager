@@ -11,6 +11,8 @@ import { TemplateLessonModule } from './template-lesson/template-lesson.module';
 import { JwtMiddleware } from './middleware/jwt-middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { TestModule } from './test/test.module';
+import { SessionMiddleware } from './middleware/session-middleware';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -24,17 +26,29 @@ import { TestModule } from './test/test.module';
     TemplateDayModule,
     TemplateLessonModule,
     TestModule,
+    SessionModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'SECRET_KEY_CHANGE_IN_PRODUCTION',
       signOptions: { expiresIn: '7d' },
     }),
   ],
-  providers: [JwtMiddleware],
+  providers: [JwtMiddleware, SessionMiddleware],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    // consumer
+    //   .apply(JwtMiddleware)
+    //   .exclude(
+    //     { path: "auth/login", method: RequestMethod.POST },
+    //     { path: "sample", method: RequestMethod.POST },
+    //     { path: "users", method: RequestMethod.POST },
+    //     { path: "sample/clearDB", method: RequestMethod.DELETE },
+    //     { path: "users", method: RequestMethod.GET },
+    //     { path: "test", method: RequestMethod.GET }
+    //   )
+    //   .forRoutes("*")
     consumer
-      .apply(JwtMiddleware)
+      .apply(SessionMiddleware)
       .exclude(
         { path: "auth/login", method: RequestMethod.POST },
         { path: "sample", method: RequestMethod.POST },

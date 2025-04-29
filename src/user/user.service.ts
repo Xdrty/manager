@@ -16,6 +16,12 @@ export class UserService {
         return user;
     }
 
+    async findUserByUsername(username: string) {
+        return await this.prisma.user.findUnique({
+            where: { username }
+        })
+    }
+
     async getAllUsers() {
         const users = await this.prisma.user.findMany({
             include: { sclass: true },

@@ -1,14 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
+import { SessionService } from 'src/session/session.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private prisma: PrismaService,
-        private jwtService: JwtService,
+        // private jwtService: JwtService,
+        private readonly sessionService: SessionService,
+        private readonly userService: UserService
     ) { }
 
     async validateUser(username: string, password: string) {
@@ -20,18 +24,9 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        // For demo purposes, if comparison to raw password is needed
-        // In a real app, use proper password hashing
-        // Example with raw password comparison:
         if (user.password !== password) {
             throw new UnauthorizedException('Invalid credentials');
         }
-
-        // For future: When using bcrypt:
-        // const isPasswordValid = await bcrypt.compare(password, user.password);
-        // if (!isPasswordValid) {
-        //     throw new UnauthorizedException('Invalid credentials');
-        // }
 
         const { password: _, ...result } = user;
         return result;
@@ -53,19 +48,18 @@ export class AuthService {
 
     async login(user: any, res: Response) {
         const payload = { sub: user.id, username: user.username };
-        const token = this.jwtService.sign(payload);
-        
-        // Set cookie with the token
-        res.cookie('sessionId', token, {
-            httpOnly: true,
+        const userok = await this.userService.findUserByUsername(payload.username)
+        if (!userok) throw new NotFoundException("incorrect input data")
+        const sessionId = await this.sessionService.createSession(userok.id)
+
+        res.cookie('sessionId', sessionId, {
+            httpOnly: false,
             secure: true,
             sameSite: 'none',
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             path: '/',
         });
 
-        console.log('Login successful, cookie set with token:', token.substring(0, 20) + '...');
-        
         return {
             id: user.id,
             username: user.username,
@@ -83,7 +77,7 @@ export class AuthService {
         });
 
         console.log('Logout successful, cookie cleared');
-        
+
         return { message: 'Logged out successfully' };
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -14,6 +14,7 @@ export class AuthService {
         private readonly sessionService: SessionService,
         private readonly userService: UserService
     ) { }
+    private readonly logger = new Logger();
 
     async validateUser(username: string, password: string) {
         const user = await this.prisma.user.findUnique({
@@ -21,14 +22,17 @@ export class AuthService {
         });
 
         if (!user) {
+            this.logger.log(`!user`)
             throw new UnauthorizedException('Invalid credentials');
         }
 
         if (user.password !== password) {
+            this.logger.log(`user.password !== password`)
             throw new UnauthorizedException('Invalid credentials');
         }
 
         const { password: _, ...result } = user;
+        this.logger.log(`return`)
         return result;
     }
 

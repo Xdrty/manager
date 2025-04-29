@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Res, HttpCode, HttpStatus, Delete, Req, BadRequestException, UnauthorizedException, Get } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpCode, HttpStatus, Delete, Req, BadRequestException, UnauthorizedException, Get, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
+  private readonly logger = new Logger();
 
   // User login
   @Post('login')
@@ -16,9 +17,12 @@ export class AuthController {
   ) {
     try {
       // First validate the user
+      this.logger.log(`start user`)
       const user = await this.authService.validateUser(username, password);
+      this.logger.log(`returned user`)
       
       // Then login with the validated user
+      this.logger.log(`start login`)
       return await this.authService.login(user, res);
     } catch (error) {
       throw new UnauthorizedException('Invalid username or password');

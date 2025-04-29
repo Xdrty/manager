@@ -13,6 +13,7 @@ export class SessionMiddleware implements NestMiddleware {
                 `${req.method} ${req.originalUrl} ${res.statusCode} — IP: ${req.ip}`
             );
         });
+        this.logger.log(`any request in middleware`)
 
         const sessionId = req.cookies["sessionId"]
         if (!sessionId) throw new UnauthorizedException

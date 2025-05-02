@@ -6,8 +6,8 @@ import { readFileSync } from 'fs';
 
 async function bootstrap() {
   const httpsOptions = {
-    key:  readFileSync('/etc/letsencrypt/live/schoool-manager.duckdns.org/privkey.pem'),
-    cert: readFileSync('/etc/letsencrypt/live/schoool-manager.duckdns.org/fullchain.pem'),
+    key:  readFileSync('/etc/letsencrypt/live/school-manager.myddns.me/privkey.pem'),
+    cert: readFileSync('/etc/letsencrypt/live/school-manager.myddns.me/fullchain.pem'),
   };
 
   const app = await NestFactory.create(AppModule, { httpsOptions });
